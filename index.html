@@ -1,125 +1,80 @@
-<!doctype html>
-<html lang="bn">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Colour Big/Small Predictor</title>
-  <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial; padding: 18px; max-width:720px; margin:auto; }
-    .swatch { width:120px; height:120px; border:1px solid #ccc; margin:12px 0; display:inline-block; vertical-align:middle; }
-    label { display:block; margin-top:10px; }
-    .result { margin-top:12px; font-weight:600; }
-    .info { color:#444; margin-top:6px; font-size:0.95rem; }
-    input[type="text"] { width:140px; padding:6px; }
-    .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-  </style>
-</head>
-<body>
-  <h2>Colour Big / Small Predictor</h2>
-  <p>রঙ দিন (hex বা picker) — টুলটি আগে বলে দেবে "big" (bright) না "small" (dark)। থ্রেশহোল্ড পরিবর্তন করে নিন প্রয়োজনে।</p>
+#!/usr/bin/env python3
+"""
+Simple analysis for prediction vs actual results.
 
-  <div class="row">
-    <div>
-      <label>Hex কোড (উদাহরণ: #1a73e8 বা 1a73e8)</label>
-      <input id="hexInput" type="text" placeholder="#RRGGBB" />
-      <button id="applyBtn">Predict</button>
-    </div>
+CSV expected columns:
+- predicted
+- actual
 
-    <div>
-      <label>Colour picker</label>
-      <input id="picker" type="color" value="#1a73e8" />
-    </div>
+Usage:
+  pip install pandas scipy
+  python predictions_analysis.py predictions.csv --p0 0.1
+"""
+import argparse
+import sys
+import pandas as pd
+from scipy.stats import binomtest
 
-    <div>
-      <label>Threshold (luminance) — তুলনা মাপ (0..255)</label>
-      <input id="thr" type="range" min="0" max="255" value="128" />
-      <div class="info">Current threshold: <span id="thrVal">128</span></div>
-    </div>
-  </div>
+def load_csv(path):
+    df = pd.read_csv(path)
+    if 'predicted' not in df.columns or 'actual' not in df.columns:
+        raise ValueError("CSV must contain 'predicted' and 'actual' columns")
+    return df
 
-  <div style="margin-top:18px;">
-    <div class="swatch" id="swatch"></div>
-    <div style="display:inline-block; vertical-align:top;">
-      <div class="result">Prediction: <span id="pred">—</span></div>
-      <div class="info">Luminance: <span id="lum">—</span> (0..255)</div>
-      <div class="info">Suggested text color: <span id="fg">—</span></div>
-      <div class="info">বিকল্প: WCAG contrast দেখার জন্য threshold বাড়ান/কমান।</div>
-    </div>
-  </div>
+def main():
+    p = argparse.ArgumentParser(description="Evaluate prediction accuracy vs random baseline")
+    p.add_argument('csv', help='Path to CSV file with columns: predicted, actual')
+    p.add_argument('--p0', type=float, default=None,
+                   help='Baseline probability for a correct prediction (e.g. 0.1 for 1/10). If omitted, will try to infer for discrete labels.')
+    p.add_argument('--min-samples', type=int, default=10, help='Warn if sample size is small')
+    args = p.parse_args()
 
-  <script>
-    // Helper: normalize hex string and return {r,g,b} or null
-    function parseHex(h) {
-      if (!h) return null;
-      h = h.trim().replace(/^#/, '');
-      if (![3,6].includes(h.length)) return null;
-      if (h.length === 3) h = h.split('').map(c=>c+c).join('');
-      if (!/^[0-9a-fA-F]{6}$/.test(h)) return null;
-      const r = parseInt(h.substr(0,2),16);
-      const g = parseInt(h.substr(2,2),16);
-      const b = parseInt(h.substr(4,2),16);
-      return {r,g,b,hex:'#'+h.toLowerCase()};
-    }
+    try:
+        df = load_csv(args.csv)
+    except Exception as e:
+        print("Error loading CSV:", e, file=sys.stderr)
+        sys.exit(2)
 
-    // relative luminance (simple linear RGB weighted sum scaled to 0..255)
-    function luminance({r,g,b}) {
-      return 0.2126*r + 0.7152*g + 0.0722*b;
-    }
+    df = df.dropna(subset=['predicted', 'actual'])
+    df['correct'] = df['predicted'].astype(str) == df['actual'].astype(str)
+    n = len(df)
+    k = int(df['correct'].sum())
+    accuracy = k / n if n > 0 else 0.0
 
-    // suggest black or white text based on luminance (simple)
-    function suggestText(lum, threshold=128) {
-      // If background is bright -> use dark text (black), else white
-      return lum >= threshold ? 'black' : 'white';
-    }
+    # infer p0 if not provided: if labels numeric or categorical, assume uniform over distinct actual values
+    p0 = args.p0
+    if p0 is None:
+        distinct = df['actual'].nunique()
+        if distinct > 1:
+            p0 = 1.0 / distinct
+        else:
+            p0 = 0.5  # fallback
+    # run binomial test (one-sided: greater than random baseline)
+    res = binomtest(k, n, p0, alternative='greater')
 
-    const hexInput = document.getElementById('hexInput');
-    const picker = document.getElementById('picker');
-    const applyBtn = document.getElementById('applyBtn');
-    const swatch = document.getElementById('swatch');
-    const pred = document.getElementById('pred');
-    const lumEl = document.getElementById('lum');
-    const fgEl = document.getElementById('fg');
-    const thr = document.getElementById('thr');
-    const thrVal = document.getElementById('thrVal');
+    print("Result summary")
+    print("--------------")
+    print(f"Total predictions: {n}")
+    print(f"Correct predictions: {k}")
+    print(f"Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
+    print(f"Baseline p0 used: {p0}")
+    print(f"Binomial test (greater): p-value = {res.pvalue:.6g}")
+    print()
 
-    function updateFromHexString(s) {
-      const obj = parseHex(s || picker.value);
-      if (!obj) {
-        pred.textContent = 'Invalid hex';
-        lumEl.textContent = '—';
-        fgEl.textContent = '—';
-        swatch.style.background = 'transparent';
-        swatch.style.border = '1px dashed #f66';
-        return;
-      }
-      swatch.style.background = obj.hex;
-      swatch.style.border = '1px solid #ccc';
-      const lum = Math.round(luminance(obj) * 100) / 100;
-      lumEl.textContent = lum;
-      const threshold = Number(thr.value);
-      const label = lum >= threshold ? 'big' : 'small';
-      pred.textContent = label;
-      const fg = suggestText(lum, threshold);
-      fgEl.textContent = fg;
-      // also set swatch text color for readability demo
-      swatch.textContent = '';
-      swatch.title = `hex ${obj.hex}`;
-    }
+    if n < args.min_samples:
+        print(f"Warning: small sample size (n={n}). Results may be unreliable.")
+    print("Top predicted values (count):")
+    print(df['predicted'].value_counts().head(10).to_string())
+    print()
+    print("Top actual values (count):")
+    print(df['actual'].value_counts().head(10).to_string())
+    print()
+    print("If you want, save a detailed CSV of mismatches:")
+    mismatches = df.loc[~df['correct'], ['predicted','actual']]
+    print(f"Mismatches: {len(mismatches)} rows")
+    # optionally write mismatches file:
+    mismatches.to_csv('mismatches.csv', index=False)
+    print("Wrote mismatches.csv containing the incorrect predictions (if any).")
 
-    applyBtn.addEventListener('click', ()=> updateFromHexString(hexInput.value));
-    picker.addEventListener('input', ()=> {
-      hexInput.value = picker.value;
-      updateFromHexString(picker.value);
-    });
-    thr.addEventListener('input', ()=> {
-      thrVal.textContent = thr.value;
-      // update preview using current hex input or picker
-      updateFromHexString(hexInput.value || picker.value);
-    });
-
-    // initialize
-    hexInput.value = picker.value;
-    updateFromHexString(picker.value);
-  </script>
-</body>
-</html>
+if __name__ == '__main__':
+    main()
