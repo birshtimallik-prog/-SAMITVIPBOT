@@ -3,196 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>WinGo 1 Min Demo</title>
+<title>Live Color Demo</title>
 
 <style>
 *{box-sizing:border-box}
-
 body{
   margin:0;
-  background:#111b45;
+  background:#07132e;
   color:white;
   font-family:Arial,sans-serif;
-  text-align:center;
+  text-align:center
 }
-
-.app{
-  max-width:500px;
+.box{
+  max-width:430px;
   margin:auto;
-  padding:15px;
+  padding:18px
 }
-
-h1{
-  margin:8px 0 15px;
-  font-size:28px;
-}
-
-.timer-box{
-  background:#1687d9;
-  border-radius:15px;
-  padding:15px;
-}
-
-.timer{
-  font-size:50px;
-  font-weight:bold;
-  letter-spacing:5px;
-}
-
-.period{
-  font-size:17px;
-  margin-top:8px;
-}
-
-.buttons{
-  display:flex;
-  gap:8px;
-  margin-top:15px;
-}
-
-.buttons div{
-  flex:1;
-  padding:15px 5px;
-  border-radius:10px;
-  font-weight:bold;
-}
-
-.green{background:#16a34a}
-.violet{background:#8b42d6}
-.red{background:#ef3340}
-
-.numbers{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:10px;
-  margin-top:18px;
-}
-
-.num{
-  padding:18px 5px;
-  border-radius:50%;
-  font-size:25px;
-  font-weight:bold;
-}
-
-.n0,.n2,.n4,.n6,.n8{background:#e83b4b}
-.n1,.n3,.n5,.n7,.n9{background:#18a878}
-
-.result{
-  margin-top:20px;
-  background:#222;
-  border-radius:15px;
+h1{font-size:28px}
+.card{
+  background:#102653;
+  border-radius:18px;
   padding:20px;
+  margin:15px 0;
+  box-shadow:0 5px 20px #0006
 }
-
-.result-title{
-  color:#aaa;
-}
-
-.result-value{
-  font-size:32px;
+.timer{
+  font-size:42px;
   font-weight:bold;
-  margin-top:10px;
+  color:#00e5ff
 }
-
-.warning{
-  color:#aaa;
-  font-size:12px;
-  margin-top:15px;
+.period{
+  font-size:18px;
+  margin-top:10px;
+  word-break:break-all
+}
+.prediction{
+  font-size:30px;
+  font-weight:bold;
+  margin:15px
+}
+.number{
+  font-size:55px;
+  font-weight:bold
+}
+.green{color:#20e878}
+.red{color:#ff4757}
+.violet{color:#d56cff}
+button{
+  width:100%;
+  padding:15px;
+  border:0;
+  border-radius:12px;
+  background:#00bcd4;
+  color:white;
+  font-size:18px;
+  font-weight:bold
+}
+.history{
+  text-align:left;
+  max-height:300px;
+  overflow:auto
+}
+.row{
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+  border-bottom:1px solid #ffffff22
+}
+.note{
+  color:#ffd166;
+  font-size:13px;
+  margin-top:15px
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<div class="box">
 
-<h1>🎨 WinGo 1 Min — Demo</h1>
+<h1>🎨 Color Protection</h1>
 
-<div class="timer-box">
-
-<div id="timer" class="timer">00:60</div>
-
-<div class="period">
-Period: <span id="period">---</span>
+<div class="card">
+  <div>Time Remaining</div>
+  <div class="timer" id="timer">00:60</div>
+  <div class="period" id="period">Period: --</div>
 </div>
 
+<div class="card">
+  <div>🔮 NEXT DEMO PREDICTION</div>
+
+  <div class="prediction" id="color">---</div>
+
+  <div class="number" id="number">?</div>
+
+  <div id="size">---</div>
 </div>
 
-<div class="buttons">
-<div class="green">Green</div>
-<div class="violet">Violet</div>
-<div class="red">Red</div>
+<button onclick="newPrediction()">NEW DEMO PREDICTION</button>
+
+<div class="card">
+  <h2>📋 Demo History</h2>
+  <div class="history" id="history"></div>
 </div>
 
-<div class="numbers">
-
-<div class="num n0">0</div>
-<div class="num n1">1</div>
-<div class="num n2">2</div>
-<div class="num n3">3</div>
-<div class="num n4">4</div>
-
-<div class="num n5">5</div>
-<div class="num n6">6</div>
-<div class="num n7">7</div>
-<div class="num n8">8</div>
-<div class="num n9">9</div>
-
-</div>
-
-<div class="result">
-
-<div class="result-title">
-ডেমো রেজাল্ট
-</div>
-
-<div id="result" class="result-value">
-অপেক্ষা করুন...
-</div>
-
-</div>
-
-<div class="warning">
-এটি শুধুমাত্র সিমুলেশন। কোনো আসল Tiranga ফলাফল আগে থেকে জানায় না।
+<div class="note">
+⚠️ এটি শুধুমাত্র Demo/Random simulation।
+আসল কোনো গেমের ফলাফল বা জেতার নিশ্চয়তা দেয় না।
 </div>
 
 </div>
 
 <script>
 
-function pad(n){
-  return String(n).padStart(2,"0");
-}
+/* =========================
+   SETTINGS
+========================= */
+
+// এখানে তোমার গেমের বর্তমান Period-এর শেষ নম্বর বসাও
+let basePeriod = 11179;
+
+// প্রতি রাউন্ড 60 সেকেন্ড
+let seconds = 60;
+
+// Demo history
+let history = [];
 
 
-/* Period তৈরি */
-function getPeriod(){
+/* =========================
+   RANDOM DEMO RESULT
+========================= */
 
-  const now = new Date();
+function generatePrediction(){
 
-  const date =
-    now.getFullYear().toString() +
-    pad(now.getMonth()+1) +
-    pad(now.getDate());
-
-  const minutes =
-    now.getHours()*60 +
-    now.getMinutes();
-
-  return date + "1000" + String(minutes).padStart(4,"0");
-}
-
-
-/* ডেমো ফলাফল */
-function makeDemoResult(){
-
-  const number =
-    Math.floor(Math.random()*10);
+  let number = Math.floor(Math.random()*10);
 
   let color;
 
-  if(number === 0 || number === 5){
+  // Demo color rules
+  if(number === 0){
+    color = "Violet";
+  }
+  else if(number === 5){
     color = "Violet";
   }
   else if(number % 2 === 0){
@@ -202,48 +154,135 @@ function makeDemoResult(){
     color = "Green";
   }
 
-  const size =
-    number >= 5 ? "Big" : "Small";
+  let size = number >= 5 ? "BIG" : "SMALL";
 
-  return color + " • " + number + " • " + size;
+  return {
+    number:number,
+    color:color,
+    size:size
+  };
 }
 
 
-/* প্রতি সেকেন্ডে ঘড়ি আপডেট */
-function update(){
+/* =========================
+   SHOW PREDICTION
+========================= */
 
-  const now = new Date();
+function showPrediction(){
 
-  const seconds =
-    now.getSeconds();
+  let result = generatePrediction();
 
-  const remaining =
-    60 - seconds;
+  let nextPeriod = basePeriod + 1;
 
-  document.getElementById("timer")
-    .textContent =
-    "00:" + pad(remaining);
+  document.getElementById("period").innerText =
+    "Period: 20260818" + nextPeriod;
 
-  document.getElementById("period")
-    .textContent =
-    getPeriod();
+  document.getElementById("number").innerText =
+    result.number;
+
+  document.getElementById("color").innerText =
+    result.color;
+
+  document.getElementById("size").innerText =
+    result.size;
+
+  let colorBox = document.getElementById("color");
+
+  colorBox.className = "prediction";
+
+  if(result.color === "Green")
+    colorBox.classList.add("green");
+
+  if(result.color === "Red")
+    colorBox.classList.add("red");
+
+  if(result.color === "Violet")
+    colorBox.classList.add("violet");
+
+  basePeriod++;
+
+  addHistory(nextPeriod,result);
+}
 
 
-  /* নতুন মিনিট শুরু */
-  if(seconds === 0){
+/* =========================
+   NEW PREDICTION BUTTON
+========================= */
 
-    document.getElementById("result")
-      .textContent =
-      makeDemoResult();
+function newPrediction(){
+  showPrediction();
+}
 
+
+/* =========================
+   HISTORY
+========================= */
+
+function addHistory(period,result){
+
+  history.unshift({
+    period:period,
+    number:result.number,
+    color:result.color,
+    size:result.size
+  });
+
+  if(history.length > 20)
+    history.pop();
+
+  renderHistory();
+}
+
+
+function renderHistory(){
+
+  let html="";
+
+  history.forEach(function(x){
+
+    html += `
+      <div class="row">
+        <span>${x.period}</span>
+        <span>${x.number}</span>
+        <span>${x.color}</span>
+        <span>${x.size}</span>
+      </div>
+    `;
+
+  });
+
+  document.getElementById("history").innerHTML = html;
+}
+
+
+/* =========================
+   60 SECOND LIVE CLOCK
+========================= */
+
+function updateTimer(){
+
+  document.getElementById("timer").innerText =
+    "00:" + String(seconds).padStart(2,"0");
+
+  seconds--;
+
+  if(seconds < 0){
+
+    seconds = 60;
+
+    // নতুন Demo round
+    showPrediction();
   }
-
 }
 
 
-update();
+/* =========================
+   START
+========================= */
 
-setInterval(update,1000);
+showPrediction();
+
+setInterval(updateTimer,1000);
 
 </script>
 
