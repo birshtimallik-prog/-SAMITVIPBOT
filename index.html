@@ -1,30 +1,634 @@
-<script>
-let currentPeriod = 20260818100011189;
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-// ছবিতে যখন 23 সেকেন্ড বাকি ছিল
+<title>Color Game Demo</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#07133b;
+  color:white;
+}
+
+.app{
+  width:100%;
+  max-width:480px;
+  margin:auto;
+  min-height:100vh;
+  background:linear-gradient(#0759b8,#07163d);
+  padding-bottom:25px;
+}
+
+/* HEADER */
+.header{
+  height:65px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  background:#064a9d;
+}
+
+.logo{
+  font-size:28px;
+  font-weight:bold;
+  font-style:italic;
+}
+
+.logo span{
+  color:#22d7ff;
+}
+
+.icons{
+  font-size:23px;
+}
+
+/* BALANCE DEMO */
+.balance{
+  margin:12px;
+  padding:18px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#1688e8,#0752b5);
+  text-align:center;
+}
+
+.balance small{
+  opacity:.8;
+}
+
+.balance h2{
+  margin:6px;
+}
+
+.demo-badge{
+  display:inline-block;
+  background:#ffb300;
+  color:#111;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+/* GAME TABS */
+.tabs{
+  display:flex;
+  justify-content:space-around;
+  margin:12px;
+}
+
+.tab{
+  width:23%;
+  padding:14px 4px;
+  border-radius:12px;
+  text-align:center;
+  background:#123d81;
+  font-size:13px;
+}
+
+.tab.active{
+  background:#087be5;
+}
+
+/* TIMER */
+.game-card{
+  margin:12px;
+  padding:16px;
+  border-radius:18px;
+  background:#0d2d68;
+}
+
+.topline{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.timer{
+  font-size:38px;
+  font-weight:bold;
+  color:#25dfff;
+}
+
+.period{
+  margin-top:8px;
+  background:#092353;
+  padding:12px;
+  border-radius:10px;
+  text-align:center;
+  font-size:17px;
+  word-break:break-all;
+}
+
+/* COLORS */
+.colors{
+  display:flex;
+  gap:8px;
+  margin-top:15px;
+}
+
+.color{
+  flex:1;
+  padding:15px 5px;
+  border-radius:10px;
+  text-align:center;
+  font-weight:bold;
+}
+
+.green{
+  background:#13bd63;
+}
+
+.violet{
+  background:#a044df;
+}
+
+.red{
+  background:#f03346;
+}
+
+/* NUMBERS */
+.numbers{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-top:15px;
+}
+
+.num{
+  height:58px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  font-weight:bold;
+  background:#18a76a;
+  box-shadow:inset 0 0 12px #ffffff55;
+}
+
+.num.rednum{
+  background:#ef4050;
+}
+
+.num.violetnum{
+  background:linear-gradient(135deg,#ef4050,#8d42df);
+}
+
+/* BIG SMALL */
+.bigsmall{
+  display:flex;
+  margin-top:16px;
+  overflow:hidden;
+  border-radius:20px;
+}
+
+.big{
+  width:50%;
+  padding:15px;
+  text-align:center;
+  background:#f49b19;
+  font-weight:bold;
+}
+
+.small{
+  width:50%;
+  padding:15px;
+  text-align:center;
+  background:#159bd7;
+  font-weight:bold;
+}
+
+/* PREDICTION */
+.prediction{
+  margin-top:18px;
+  padding:18px;
+  border-radius:15px;
+  background:#071e50;
+  text-align:center;
+}
+
+.pred-title{
+  color:#ffd54f;
+  font-size:14px;
+}
+
+.pred-number{
+  font-size:48px;
+  font-weight:bold;
+  margin:8px;
+}
+
+.pred-color{
+  font-size:24px;
+  font-weight:bold;
+}
+
+/* HISTORY */
+.history{
+  margin-top:18px;
+}
+
+.history-title{
+  font-size:20px;
+  margin-bottom:10px;
+}
+
+.history-head,
+.history-row{
+  display:grid;
+  grid-template-columns:1.6fr .5fr .8fr .8fr;
+  gap:4px;
+  padding:11px 5px;
+  font-size:12px;
+  text-align:center;
+}
+
+.history-head{
+  background:#087be5;
+  border-radius:8px;
+}
+
+.history-row{
+  border-bottom:1px solid #ffffff18;
+}
+
+/* NOTICE */
+.notice{
+  margin:15px 12px;
+  padding:12px;
+  border-radius:10px;
+  background:#3a2b09;
+  color:#ffd76a;
+  font-size:12px;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>☰</div>
+
+    <div class="logo">
+      <span>7</span> COLOR
+    </div>
+
+    <div class="icons">◉ ⚙</div>
+  </div>
+
+
+  <!-- DEMO BALANCE -->
+  <div class="balance">
+
+    <span class="demo-badge">DEMO MODE</span>
+
+    <small>Demo Balance</small>
+
+    <h2>₹0.00</h2>
+
+  </div>
+
+
+  <!-- GAME TABS -->
+  <div class="tabs">
+
+    <div class="tab">30 Sec</div>
+
+    <div class="tab active">
+      WinGo<br>1 Min
+    </div>
+
+    <div class="tab">
+      WinGo<br>3 Min
+    </div>
+
+    <div class="tab">
+      WinGo<br>5 Min
+    </div>
+
+  </div>
+
+
+  <!-- MAIN GAME -->
+  <div class="game-card">
+
+    <div class="topline">
+
+      <div>
+        🎮 WinGo 1 Min
+      </div>
+
+      <div>
+        Time remaining
+      </div>
+
+    </div>
+
+
+    <div class="timer" id="timer">
+      00:23
+    </div>
+
+
+    <div class="period" id="period">
+      Period: 20260818100011189
+    </div>
+
+
+    <!-- COLORS -->
+    <div class="colors">
+
+      <div class="color green">
+        Green
+      </div>
+
+      <div class="color violet">
+        Violet
+      </div>
+
+      <div class="color red">
+        Red
+      </div>
+
+    </div>
+
+
+    <!-- NUMBERS -->
+    <div class="numbers">
+
+      <div class="num violetnum">0</div>
+      <div class="num">1</div>
+      <div class="num rednum">2</div>
+      <div class="num">3</div>
+      <div class="num rednum">4</div>
+
+      <div class="num violetnum">5</div>
+      <div class="num rednum">6</div>
+      <div class="num">7</div>
+      <div class="num rednum">8</div>
+      <div class="num">9</div>
+
+    </div>
+
+
+    <!-- BIG SMALL -->
+    <div class="bigsmall">
+
+      <div class="big">
+        Big
+      </div>
+
+      <div class="small">
+        Small
+      </div>
+
+    </div>
+
+
+    <!-- DEMO PREDICTION -->
+    <div class="prediction">
+
+      <div class="pred-title">
+        🔮 NEXT DEMO PREDICTION
+      </div>
+
+      <div class="pred-number" id="predNumber">
+        7
+      </div>
+
+      <div class="pred-color" id="predColor">
+        GREEN
+      </div>
+
+      <div id="predSize">
+        BIG
+      </div>
+
+    </div>
+
+
+    <!-- HISTORY -->
+    <div class="history">
+
+      <div class="history-title">
+        📋 Game History
+      </div>
+
+      <div class="history-head">
+        <div>Period</div>
+        <div>No.</div>
+        <div>Big/Small</div>
+        <div>Color</div>
+      </div>
+
+      <div id="history"></div>
+
+    </div>
+
+  </div>
+
+
+  <div class="notice">
+    ⚠️ DEMO ONLY — Prediction is randomly generated.
+    এটি কোনো আসল গেমের ফলাফল বা জেতার নিশ্চয়তা নয়।
+  </div>
+
+</div>
+
+
+<script>
+
+/* ==========================
+   STARTING PERIOD
+========================== */
+
+let periodNumber = 20260818100011189;
+
+
+/* ==========================
+   TIMER
+   ছবির সময় অনুযায়ী 23 থেকে শুরু
+========================== */
+
 let seconds = 23;
 
-function showPeriod() {
-    document.getElementById("period").innerText =
-        "Period: " + currentPeriod;
+
+/* ==========================
+   RANDOM DEMO RESULT
+========================== */
+
+function makePrediction(){
+
+  let number =
+    Math.floor(Math.random() * 10);
+
+  let color;
+
+  if(number === 0 || number === 5){
+
+    color = "VIOLET";
+
+  }
+  else if(
+    number === 1 ||
+    number === 3 ||
+    number === 7 ||
+    number === 9
+  ){
+
+    color = "GREEN";
+
+  }
+  else{
+
+    color = "RED";
+
+  }
+
+  let size =
+    number >= 5 ? "BIG" : "SMALL";
+
+
+  document.getElementById("predNumber")
+    .innerText = number;
+
+  document.getElementById("predColor")
+    .innerText = color;
+
+  document.getElementById("predSize")
+    .innerText = size;
+
 }
 
-function updateTimer() {
 
-    document.getElementById("timer").innerText =
-        "00:" + String(seconds).padStart(2, "0");
+/* ==========================
+   HISTORY
+========================== */
 
-    if (seconds === 0) {
-        currentPeriod++;
-        seconds = 59;
-        showPeriod();
-    } else {
-        seconds--;
-    }
+function addHistory(){
+
+  let number =
+    Math.floor(Math.random() * 10);
+
+  let color;
+
+  if(number === 0 || number === 5)
+    color = "Violet";
+  else if(number % 2 === 1)
+    color = "Green";
+  else
+    color = "Red";
+
+  let size =
+    number >= 5 ? "Big" : "Small";
+
+
+  let row =
+    document.createElement("div");
+
+  row.className = "history-row";
+
+  row.innerHTML = `
+    <div>${periodNumber}</div>
+    <div>${number}</div>
+    <div>${size}</div>
+    <div>${color}</div>
+  `;
+
+  document
+    .getElementById("history")
+    .prepend(row);
+
+
+  /* সর্বোচ্চ 10টি history */
+
+  let rows =
+    document.querySelectorAll(".history-row");
+
+  if(rows.length > 10){
+
+    rows[rows.length - 1].remove();
+
+  }
+
 }
 
-showPeriod();
+
+/* ==========================
+   TIMER
+========================== */
+
+function updateTimer(){
+
+  document.getElementById("timer")
+    .innerText =
+    "00:" +
+    String(seconds).padStart(2,"0");
+
+
+  if(seconds === 0){
+
+    /* নতুন Period */
+
+    periodNumber++;
+
+
+    document.getElementById("period")
+      .innerText =
+      "Period: " + periodNumber;
+
+
+    /* আগের ফল history-তে */
+
+    addHistory();
+
+
+    /* নতুন Demo prediction */
+
+    makePrediction();
+
+
+    /* নতুন 1 মিনিট */
+
+    seconds = 59;
+
+  }
+  else{
+
+    seconds--;
+
+  }
+
+}
+
+
+/* ==========================
+   START
+========================== */
+
+makePrediction();
+
 updateTimer();
 
-setInterval(updateTimer, 1000);
+setInterval(
+  updateTimer,
+  1000
+);
+
 </script>
+
+</body>
+</html>
