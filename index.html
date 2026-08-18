@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Color Protection - Live Result</title>
+<title>Color Protection Demo</title>
 
 <style>
 * {
@@ -22,190 +22,108 @@ h1 {
   margin: 20px 0 8px;
 }
 
-#timer {
-  font-size: 30px;
-  font-weight: bold;
-  color: #00eaff;
-  margin: 10px;
-}
-
-.game {
+#game {
   width: 92%;
   max-width: 600px;
+  height: 70vh;
   margin: auto;
   border: 4px solid white;
-  border-radius: 12px;
-  padding: 20px;
-  min-height: 600px;
-}
-
-.box {
   background: #222;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 15px 0;
+  position: relative;
+  overflow: hidden;
 }
 
-.number {
-  font-size: 65px;
+.ball {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+}
+
+.green {
+  background: #00ff55;
+  box-shadow: 0 0 25px #00ff55;
+}
+
+.red {
+  background: red;
+  box-shadow: 0 0 20px red;
+}
+
+#result {
+  font-size: 30px;
   font-weight: bold;
-  margin: 10px;
-}
-
-.color {
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.next {
-  color: #ffd000;
-  font-size: 22px;
+  margin: 15px;
 }
 
 button {
-  background: #00bfff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 35px;
+  font-size: 22px;
+  background: #08bff0;
   color: white;
-  border: 0;
-  border-radius: 10px;
-  padding: 16px 30px;
-  font-size: 20px;
-  margin-top: 15px;
 }
 
 button:active {
   transform: scale(.96);
-}
-
-.history {
-  text-align: left;
-  max-height: 180px;
-  overflow: auto;
-}
-
-.history div {
-  background: #333;
-  padding: 8px;
-  margin: 5px;
-  border-radius: 6px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🎮 COLOR PROTECTION</h1>
+<h1>🎨 Color Protection</h1>
 
-<div id="timer">10</div>
+<div id="result">START চাপুন</div>
 
-<div class="game">
-
-  <div class="box">
-    <div>বর্তমান ফলাফল</div>
-    <div id="currentNumber" class="number">-</div>
-    <div id="currentColor" class="color">অপেক্ষা করুন...</div>
-  </div>
-
-  <div class="box">
-    <div class="next">🔮 NEXT RESULT</div>
-
-    <div id="nextNumber" class="number">?</div>
-    <div id="nextColor" class="color">?</div>
-  </div>
-
-  <button onclick="startGame()">START GAME</button>
-
-  <div class="box">
-    <h3>📜 Result History</h3>
-    <div id="history" class="history"></div>
-  </div>
-
+<div id="game">
+  <div id="player" class="ball green"></div>
 </div>
 
+<button onclick="startGame()">START GAME</button>
+
 <script>
+const game = document.getElementById("game");
+const result = document.getElementById("result");
+const player = document.getElementById("player");
 
-let time = 10;
-let timer;
-let nextNumber;
-let nextColor;
-
-const colors = [
-  "RED 🔴",
-  "GREEN 🟢",
-  "VIOLET 🟣"
-];
-
-function createResult() {
-
-  nextNumber = Math.floor(Math.random() * 10);
-
-  nextColor = colors[
-    Math.floor(Math.random() * colors.length)
-  ];
-
-  document.getElementById("nextNumber").innerText =
-    nextNumber;
-
-  document.getElementById("nextColor").innerText =
-    nextColor;
-}
-
-function showResult() {
-
-  document.getElementById("currentNumber").innerText =
-    nextNumber;
-
-  document.getElementById("currentColor").innerText =
-    nextColor;
-
-  addHistory(nextNumber, nextColor);
-
-  createResult();
-
-  time = 10;
-}
-
-function addHistory(number, color) {
-
-  const history =
-    document.getElementById("history");
-
-  const item =
-    document.createElement("div");
-
-  item.innerText =
-    "Number: " + number +
-    "  |  Color: " + color;
-
-  history.prepend(item);
+function randomNumber() {
+  return Math.floor(Math.random() * 10) + 1;
 }
 
 function startGame() {
 
-  clearInterval(timer);
+  result.textContent = "Result তৈরি হচ্ছে...";
 
-  createResult();
+  document.querySelectorAll(".enemy").forEach(e => e.remove());
 
-  time = 10;
+  // নিজের ডেমো গেমের র‍্যান্ডম রেজাল্ট
+  const number = randomNumber();
+  const color = Math.random() < 0.5 ? "RED" : "GREEN";
 
-  document.getElementById("timer").innerText =
-    time;
+  // লাল বল তৈরি
+  for (let i = 0; i < 5; i++) {
 
-  timer = setInterval(() => {
+    const enemy = document.createElement("div");
 
-    time--;
+    enemy.className = "ball red enemy";
 
-    document.getElementById("timer").innerText =
-      time;
+    enemy.style.left =
+      Math.random() * (game.clientWidth - 70) + "px";
 
-    if (time <= 0) {
-      showResult();
-    }
+    enemy.style.top =
+      Math.random() * (game.clientHeight - 70) + "px";
 
-  }, 1000);
+    game.appendChild(enemy);
+  }
+
+  setTimeout(() => {
+    result.innerHTML =
+      "🎯 Result: <b>" + color + "</b> &nbsp; | &nbsp; Number: <b>" + number + "</b>";
+
+  }, 700);
 }
-
-createResult();
-
 </script>
 
 </body>
