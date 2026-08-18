@@ -1,80 +1,521 @@
-#!/usr/bin/env python3
-"""
-Simple analysis for prediction vs actual results.
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VIP Color Demo</title>
 
-CSV expected columns:
-- predicted
-- actual
+<style>
+*{box-sizing:border-box}
 
-Usage:
-  pip install pandas scipy
-  python predictions_analysis.py predictions.csv --p0 0.1
-"""
-import argparse
-import sys
-import pandas as pd
-from scipy.stats import binomtest
+body{
+  margin:0;
+  background:#070707;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
 
-def load_csv(path):
-    df = pd.read_csv(path)
-    if 'predicted' not in df.columns or 'actual' not in df.columns:
-        raise ValueError("CSV must contain 'predicted' and 'actual' columns")
-    return df
+.app{
+  max-width:480px;
+  min-height:100vh;
+  margin:auto;
+  background:linear-gradient(180deg,#111,#050505);
+  padding-bottom:30px;
+}
 
-def main():
-    p = argparse.ArgumentParser(description="Evaluate prediction accuracy vs random baseline")
-    p.add_argument('csv', help='Path to CSV file with columns: predicted, actual')
-    p.add_argument('--p0', type=float, default=None,
-                   help='Baseline probability for a correct prediction (e.g. 0.1 for 1/10). If omitted, will try to infer for discrete labels.')
-    p.add_argument('--min-samples', type=int, default=10, help='Warn if sample size is small')
-    args = p.parse_args()
+.header{
+  padding:20px;
+  text-align:center;
+  background:linear-gradient(135deg,#1b1b1b,#000);
+  border-bottom:1px solid #b98b2e;
+}
 
-    try:
-        df = load_csv(args.csv)
-    except Exception as e:
-        print("Error loading CSV:", e, file=sys.stderr)
-        sys.exit(2)
+.crown{
+  font-size:34px;
+}
 
-    df = df.dropna(subset=['predicted', 'actual'])
-    df['correct'] = df['predicted'].astype(str) == df['actual'].astype(str)
-    n = len(df)
-    k = int(df['correct'].sum())
-    accuracy = k / n if n > 0 else 0.0
+.logo{
+  font-size:25px;
+  font-weight:bold;
+  color:#ffd65a;
+  letter-spacing:2px;
+}
 
-    # infer p0 if not provided: if labels numeric or categorical, assume uniform over distinct actual values
-    p0 = args.p0
-    if p0 is None:
-        distinct = df['actual'].nunique()
-        if distinct > 1:
-            p0 = 1.0 / distinct
-        else:
-            p0 = 0.5  # fallback
-    # run binomial test (one-sided: greater than random baseline)
-    res = binomtest(k, n, p0, alternative='greater')
+.vip{
+  display:inline-block;
+  margin-top:7px;
+  padding:5px 14px;
+  border-radius:20px;
+  background:#b8860b;
+  color:#fff;
+  font-size:12px;
+  font-weight:bold;
+}
 
-    print("Result summary")
-    print("--------------")
-    print(f"Total predictions: {n}")
-    print(f"Correct predictions: {k}")
-    print(f"Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
-    print(f"Baseline p0 used: {p0}")
-    print(f"Binomial test (greater): p-value = {res.pvalue:.6g}")
-    print()
+.card{
+  margin:14px;
+  padding:18px;
+  border-radius:18px;
+  background:#151515;
+  border:1px solid #6d5220;
+  box-shadow:0 4px 20px #000;
+}
 
-    if n < args.min_samples:
-        print(f"Warning: small sample size (n={n}). Results may be unreliable.")
-    print("Top predicted values (count):")
-    print(df['predicted'].value_counts().head(10).to_string())
-    print()
-    print("Top actual values (count):")
-    print(df['actual'].value_counts().head(10).to_string())
-    print()
-    print("If you want, save a detailed CSV of mismatches:")
-    mismatches = df.loc[~df['correct'], ['predicted','actual']]
-    print(f"Mismatches: {len(mismatches)} rows")
-    # optionally write mismatches file:
-    mismatches.to_csv('mismatches.csv', index=False)
-    print("Wrote mismatches.csv containing the incorrect predictions (if any).")
+.title{
+  color:#ffd65a;
+  font-size:18px;
+  font-weight:bold;
+}
 
-if __name__ == '__main__':
-    main()
+.timer{
+  text-align:center;
+  font-size:52px;
+  font-weight:bold;
+  color:#ffd65a;
+  margin:8px;
+}
+
+.period{
+  padding:13px;
+  background:#090909;
+  border-radius:10px;
+  text-align:center;
+  word-break:break-all;
+  color:#ddd;
+}
+
+.colors{
+  display:flex;
+  gap:8px;
+  margin-top:15px;
+}
+
+.colors div{
+  flex:1;
+  padding:14px 4px;
+  border-radius:10px;
+  text-align:center;
+  font-weight:bold;
+}
+
+.green{background:#079447}
+.red{background:#c92736}
+.violet{background:#7736a8}
+
+.numbers{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:9px;
+  margin-top:15px;
+}
+
+.num{
+  height:55px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:23px;
+  font-weight:bold;
+  background:#168d59;
+}
+
+.num:nth-child(even){
+  background:#c92e3c;
+}
+
+.num:nth-child(5),
+.num:nth-child(6){
+  background:#7a3ca9;
+}
+
+.bigsmall{
+  display:flex;
+  margin-top:15px;
+  overflow:hidden;
+  border-radius:18px;
+}
+
+.bigsmall div{
+  width:50%;
+  padding:14px;
+  text-align:center;
+  font-weight:bold;
+}
+
+.big{
+  background:#b87513;
+}
+
+.small{
+  background:#126f9e;
+}
+
+.next{
+  text-align:center;
+  padding:20px;
+  border-radius:15px;
+  background:#0b0b0b;
+  border:1px solid #8a6827;
+  margin-top:15px;
+}
+
+.next small{
+  color:#aaa;
+}
+
+.next-number{
+  font-size:55px;
+  font-weight:bold;
+  color:#ffd65a;
+  margin:5px;
+}
+
+.next-color{
+  font-size:24px;
+  font-weight:bold;
+}
+
+.next-size{
+  margin-top:5px;
+  color:#ccc;
+}
+
+.history-title{
+  color:#ffd65a;
+  font-size:19px;
+  font-weight:bold;
+  margin-top:20px;
+}
+
+.history-head,
+.history-row{
+  display:grid;
+  grid-template-columns:1.7fr .5fr .8fr .8fr;
+  gap:3px;
+  padding:10px 3px;
+  text-align:center;
+  font-size:11px;
+}
+
+.history-head{
+  background:#76591e;
+  margin-top:9px;
+  border-radius:7px;
+}
+
+.history-row{
+  border-bottom:1px solid #ffffff15;
+}
+
+.notice{
+  margin:14px;
+  padding:11px;
+  border-radius:9px;
+  background:#241d0b;
+  color:#d9bd68;
+  font-size:11px;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="header">
+  <div class="crown">👑</div>
+  <div class="logo">COLOR VIP</div>
+  <div class="vip">VIP DEMO</div>
+</div>
+
+
+<div class="card">
+
+  <div class="title">🎮 1 MINUTE LIVE DEMO</div>
+
+  <div class="timer" id="timer">
+    00:00
+  </div>
+
+  <div class="period" id="period">
+    Period: ---
+  </div>
+
+
+  <div class="colors">
+    <div class="green">GREEN</div>
+    <div class="violet">VIOLET</div>
+    <div class="red">RED</div>
+  </div>
+
+
+  <div class="numbers">
+    <div class="num">0</div>
+    <div class="num">1</div>
+    <div class="num">2</div>
+    <div class="num">3</div>
+    <div class="num">4</div>
+    <div class="num">5</div>
+    <div class="num">6</div>
+    <div class="num">7</div>
+    <div class="num">8</div>
+    <div class="num">9</div>
+  </div>
+
+
+  <div class="bigsmall">
+    <div class="big">BIG</div>
+    <div class="small">SMALL</div>
+  </div>
+
+
+  <div class="next">
+
+    <small>🔮 NEXT DEMO RESULT</small>
+
+    <div class="next-number" id="number">
+      -
+    </div>
+
+    <div class="next-color" id="color">
+      ---
+    </div>
+
+    <div class="next-size" id="size">
+      ---
+    </div>
+
+  </div>
+
+
+  <div class="history-title">
+    📊 DEMO HISTORY
+  </div>
+
+  <div class="history-head">
+    <div>PERIOD</div>
+    <div>NO.</div>
+    <div>SIZE</div>
+    <div>COLOR</div>
+  </div>
+
+  <div id="history"></div>
+
+</div>
+
+
+<div class="notice">
+⚠️ VIP DEMO — এটি শুধু Simulation।
+আসল গেমের ফলাফল আগে থেকে জানায় না।
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   REAL PHONE CLOCK
+========================= */
+
+function pad(n){
+  return String(n).padStart(2,"0");
+}
+
+
+/*
+  Demo Period.
+  এটি নিজের Demo-র জন্য।
+*/
+
+function getPeriod(){
+
+  const now = new Date();
+
+  const date =
+    now.getFullYear().toString() +
+    pad(now.getMonth()+1) +
+    pad(now.getDate());
+
+  const minute =
+    now.getHours()*60 +
+    now.getMinutes();
+
+  return date +
+         "1000" +
+         String(minute).padStart(4,"0");
+}
+
+
+/* =========================
+   RANDOM DEMO RESULT
+========================= */
+
+function createResult(){
+
+  const number =
+    Math.floor(Math.random()*10);
+
+  let color;
+
+  if(number === 0 || number === 5){
+
+    color = "VIOLET";
+
+  }else if(number % 2 === 1){
+
+    color = "GREEN";
+
+  }else{
+
+    color = "RED";
+
+  }
+
+  const size =
+    number >= 5 ? "BIG" : "SMALL";
+
+  return {
+    number,
+    color,
+    size
+  };
+}
+
+
+/* =========================
+   NEXT RESULT
+========================= */
+
+let nextResult =
+  createResult();
+
+
+function showNext(){
+
+  document.getElementById("number")
+    .textContent =
+    nextResult.number;
+
+  document.getElementById("color")
+    .textContent =
+    nextResult.color;
+
+  document.getElementById("size")
+    .textContent =
+    nextResult.size;
+}
+
+
+/* =========================
+   HISTORY
+========================= */
+
+function addHistory(period,result){
+
+  const row =
+    document.createElement("div");
+
+  row.className =
+    "history-row";
+
+  row.innerHTML =
+    "<div>"+period+"</div>"+
+    "<div>"+result.number+"</div>"+
+    "<div>"+result.size+"</div>"+
+    "<div>"+result.color+"</div>";
+
+  document
+    .getElementById("history")
+    .prepend(row);
+
+  const rows =
+    document.querySelectorAll(".history-row");
+
+  if(rows.length > 15){
+
+    rows[rows.length-1].remove();
+
+  }
+}
+
+
+/* =========================
+   LIVE TIMER
+========================= */
+
+let previousMinute = "";
+
+
+function update(){
+
+  const now = new Date();
+
+  const seconds =
+    now.getSeconds();
+
+  const remaining =
+    60 - seconds;
+
+
+  document.getElementById("timer")
+    .textContent =
+    "00:" + pad(remaining);
+
+
+  const period =
+    getPeriod();
+
+
+  document.getElementById("period")
+    .textContent =
+    "Period: " + period;
+
+
+  const minuteKey =
+    now.getFullYear()+"-"+
+    now.getMonth()+"-"+
+    now.getDate()+"-"+
+    now.getHours()+"-"+
+    now.getMinutes();
+
+
+  if(
+    previousMinute !== "" &&
+    previousMinute !== minuteKey
+  ){
+
+    addHistory(
+      period,
+      nextResult
+    );
+
+    nextResult =
+      createResult();
+
+    showNext();
+  }
+
+
+  previousMinute =
+    minuteKey;
+}
+
+
+/* START */
+
+showNext();
+
+update();
+
+setInterval(
+  update,
+  250
+);
+
+</script>
+
+</body>
+</html>
