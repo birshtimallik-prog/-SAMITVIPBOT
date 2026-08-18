@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ধ্য<!DOCTYPE html>
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
@@ -210,6 +210,288 @@ function startGame(){
 
   },1000);
 }
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Protection Live Demo</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#111;
+  color:white;
+  font-family:Arial,sans-serif;
+  text-align:center;
+}
+
+.container{
+  max-width:520px;
+  margin:auto;
+  padding:18px;
+}
+
+h1{
+  font-size:28px;
+  margin:10px 0;
+}
+
+.note{
+  color:#aaa;
+  font-size:13px;
+  margin-bottom:15px;
+}
+
+.card{
+  background:#202020;
+  border:1px solid #555;
+  border-radius:16px;
+  padding:18px;
+  margin:14px 0;
+}
+
+.label{
+  color:#aaa;
+  font-size:15px;
+}
+
+#period{
+  font-size:18px;
+  margin-top:6px;
+}
+
+#timer{
+  font-size:58px;
+  font-weight:bold;
+  margin:8px 0;
+}
+
+#status{
+  color:#ccc;
+}
+
+#result{
+  font-size:30px;
+  font-weight:bold;
+  padding:18px;
+  border-radius:12px;
+  background:#333;
+}
+
+.green{
+  background:#087f3e !important;
+}
+
+.red{
+  background:#a51f2b !important;
+}
+
+.violet{
+  background:#7138a8 !important;
+}
+
+.small{
+  color:#aaa;
+  font-size:13px;
+  margin-top:10px;
+}
+
+button{
+  border:0;
+  border-radius:10px;
+  padding:13px 22px;
+  font-size:16px;
+  font-weight:bold;
+  background:#159447;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎨 Color Protection Live Demo</h1>
+
+<div class="note">
+এটি শুধুমাত্র ডেমো/সিমুলেশন।
+</div>
+
+<div class="card">
+
+<div class="label">Demo Period</div>
+
+<div id="period">---</div>
+
+<div id="timer">00:60</div>
+
+<div id="status">
+পরের ডেমো রাউন্ডের অপেক্ষায়...
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="label">
+সিমুলেটেড ফলাফল
+</div>
+
+<br>
+
+<div id="result">
+---
+</div>
+
+<div id="details" class="small">
+নতুন রাউন্ড শুরু হলে ফলাফল তৈরি হবে।
+</div>
+
+</div>
+
+<button onclick="newDemo()">
+নতুন ডেমো রাউন্ড
+</button>
+
+</div>
+
+<script>
+
+function pad(number){
+  return String(number).padStart(2,"0");
+}
+
+
+function makeResult(){
+
+  const number =
+    Math.floor(Math.random()*10);
+
+  let color;
+
+  if(number === 0 || number === 5){
+    color = "Violet";
+  }
+  else if(number % 2 === 1){
+    color = "Green";
+  }
+  else{
+    color = "Red";
+  }
+
+  const size =
+    number >= 5 ? "Big" : "Small";
+
+  return {
+    number:number,
+    color:color,
+    size:size
+  };
+
+}
+
+
+function showResult(result){
+
+  const box =
+    document.getElementById("result");
+
+  box.className =
+    "result " +
+    result.color.toLowerCase();
+
+  box.textContent =
+    result.color +
+    " • " +
+    result.number +
+    " • " +
+    result.size;
+
+  document.getElementById("details")
+    .textContent =
+    "এটি কম্পিউটার-জেনারেটেড ডেমো ফলাফল।";
+
+}
+
+
+let previousSecond = -1;
+
+
+function updateClock(){
+
+  const now = new Date();
+
+  const second =
+    now.getSeconds();
+
+  const remaining =
+    60 - second;
+
+  document.getElementById("timer")
+    .textContent =
+    "00:" + pad(remaining);
+
+
+  const period =
+    now.getFullYear().toString() +
+    pad(now.getMonth()+1) +
+    pad(now.getDate()) +
+    pad(now.getHours()) +
+    pad(now.getMinutes());
+
+  document.getElementById("period")
+    .textContent = period;
+
+
+  if(
+    second === 0 &&
+    previousSecond !== 0
+  ){
+
+    showResult(makeResult());
+
+    document.getElementById("status")
+      .textContent =
+      "নতুন ডেমো রাউন্ড শুরু হয়েছে";
+
+  }
+  else if(second !== 0){
+
+    document.getElementById("status")
+      .textContent =
+      "রাউন্ড চলছে...";
+
+  }
+
+  previousSecond = second;
+
+}
+
+
+function newDemo(){
+
+  showResult(makeResult());
+
+  document.getElementById("status")
+    .textContent =
+    "নতুন ডেমো ফলাফল তৈরি হয়েছে";
+
+}
+
+
+updateClock();
+
+setInterval(updateClock,250);
 
 </script>
 
