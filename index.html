@@ -1,80 +1,217 @@
-#!/usr/bin/env python3
-"""
-Simple analysis for prediction vs actual results.
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Protection Live Demo</title>
 
-CSV expected columns:
-- predicted
-- actual
+<style>
+*{box-sizing:border-box}
 
-Usage:
-  pip install pandas scipy
-  python predictions_analysis.py predictions.csv --p0 0.1
-"""
-import argparse
-import sys
-import pandas as pd
-from scipy.stats import binomtest
+body{
+  margin:0;
+  background:#111;
+  color:white;
+  font-family:Arial,sans-serif;
+  text-align:center;
+}
 
-def load_csv(path):
-    df = pd.read_csv(path)
-    if 'predicted' not in df.columns or 'actual' not in df.columns:
-        raise ValueError("CSV must contain 'predicted' and 'actual' columns")
-    return df
+h1{
+  margin:18px 0 8px;
+  font-size:30px;
+}
 
-def main():
-    p = argparse.ArgumentParser(description="Evaluate prediction accuracy vs random baseline")
-    p.add_argument('csv', help='Path to CSV file with columns: predicted, actual')
-    p.add_argument('--p0', type=float, default=None,
-                   help='Baseline probability for a correct prediction (e.g. 0.1 for 1/10). If omitted, will try to infer for discrete labels.')
-    p.add_argument('--min-samples', type=int, default=10, help='Warn if sample size is small')
-    args = p.parse_args()
+.badge{
+  display:inline-block;
+  background:#222;
+  padding:8px 15px;
+  border-radius:20px;
+  color:#00eaff;
+}
 
-    try:
-        df = load_csv(args.csv)
-    except Exception as e:
-        print("Error loading CSV:", e, file=sys.stderr)
-        sys.exit(2)
+#game{
+  width:92%;
+  max-width:520px;
+  height:520px;
+  margin:18px auto;
+  border:4px solid white;
+  position:relative;
+  overflow:hidden;
+  background:#191919;
+}
 
-    df = df.dropna(subset=['predicted', 'actual'])
-    df['correct'] = df['predicted'].astype(str) == df['actual'].astype(str)
-    n = len(df)
-    k = int(df['correct'].sum())
-    accuracy = k / n if n > 0 else 0.0
+.ball{
+  width:65px;
+  height:65px;
+  border-radius:50%;
+  position:absolute;
+  box-shadow:0 0 25px currentColor;
+}
 
-    # infer p0 if not provided: if labels numeric or categorical, assume uniform over distinct actual values
-    p0 = args.p0
-    if p0 is None:
-        distinct = df['actual'].nunique()
-        if distinct > 1:
-            p0 = 1.0 / distinct
-        else:
-            p0 = 0.5  # fallback
-    # run binomial test (one-sided: greater than random baseline)
-    res = binomtest(k, n, p0, alternative='greater')
+#timer{
+  font-size:38px;
+  font-weight:bold;
+  margin:10px;
+  color:#00eaff;
+}
 
-    print("Result summary")
-    print("--------------")
-    print(f"Total predictions: {n}")
-    print(f"Correct predictions: {k}")
-    print(f"Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
-    print(f"Baseline p0 used: {p0}")
-    print(f"Binomial test (greater): p-value = {res.pvalue:.6g}")
-    print()
+#period{
+  font-size:18px;
+  margin:8px;
+}
 
-    if n < args.min_samples:
-        print(f"Warning: small sample size (n={n}). Results may be unreliable.")
-    print("Top predicted values (count):")
-    print(df['predicted'].value_counts().head(10).to_string())
-    print()
-    print("Top actual values (count):")
-    print(df['actual'].value_counts().head(10).to_string())
-    print()
-    print("If you want, save a detailed CSV of mismatches:")
-    mismatches = df.loc[~df['correct'], ['predicted','actual']]
-    print(f"Mismatches: {len(mismatches)} rows")
-    # optionally write mismatches file:
-    mismatches.to_csv('mismatches.csv', index=False)
-    print("Wrote mismatches.csv containing the incorrect predictions (if any).")
+#prediction{
+  margin:15px auto;
+  width:90%;
+  max-width:400px;
+  background:#222;
+  border-radius:15px;
+  padding:18px;
+  font-size:23px;
+}
 
-if __name__ == '__main__':
-    main()
+.result{
+  font-size:30px;
+  font-weight:bold;
+  margin-top:10px;
+}
+
+button{
+  border:0;
+  border-radius:12px;
+  padding:15px 30px;
+  font-size:20px;
+  background:#00bfff;
+  color:white;
+}
+
+.green{color:#00ff66}
+.red{color:#ff3030}
+.violet{color:#c060ff}
+</style>
+</head>
+
+<body>
+
+<h1>🎨 Color Protection</h1>
+<div class="badge">LIVE DEMO</div>
+
+<div id="timer">60</div>
+<div id="period">Period: --</div>
+
+<div id="game"></div>
+
+<div id="prediction">
+  পরবর্তী ডেমো ফল
+  <div id="predictionText" class="result">
+    অপেক্ষা করুন...
+  </div>
+</div>
+
+<button onclick="startGame()">START GAME</button>
+
+<script>
+
+let running=false;
+let seconds=60;
+let period=1;
+let timer=null;
+
+const colors=[
+  {name:"GREEN", class:"green"},
+  {name:"RED", class:"red"},
+  {name:"VIOLET", class:"violet"}
+];
+
+function makeResult(){
+
+  const color =
+    colors[Math.floor(Math.random()*colors.length)];
+
+  const number =
+    Math.floor(Math.random()*10);
+
+  let size = number <= 4 ? "SMALL" : "BIG";
+
+  return {
+    color:color,
+    number:number,
+    size:size
+  };
+}
+
+function showResult(){
+
+  const r=makeResult();
+
+  document.getElementById("predictionText").innerHTML =
+    `<span class="${r.color.class}">
+      ${r.color.name} • ${r.number} • ${r.size}
+    </span>`;
+
+  createBalls();
+}
+
+function createBalls(){
+
+  const game=document.getElementById("game");
+  game.innerHTML="";
+
+  for(let i=0;i<5;i++){
+
+    const r=makeResult();
+
+    const ball=document.createElement("div");
+
+    ball.className="ball";
+
+    ball.style.background =
+      r.color.name.toLowerCase();
+
+    ball.style.color =
+      r.color.name.toLowerCase();
+
+    ball.style.left =
+      Math.random()*80 + "%";
+
+    ball.style.top =
+      Math.random()*85 + "%";
+
+    game.appendChild(ball);
+  }
+}
+
+function startGame(){
+
+  if(running)return;
+
+  running=true;
+  seconds=60;
+
+  showResult();
+
+  timer=setInterval(()=>{
+
+    seconds--;
+
+    document.getElementById("timer").textContent =
+      seconds;
+
+    document.getElementById("period").textContent =
+      "Period: " + period;
+
+    if(seconds<=0){
+
+      seconds=60;
+      period++;
+
+      showResult();
+    }
+
+  },1000);
+}
+
+</script>
+
+</body>
+</html>
