@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Protection</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: white;
+        text-align: center;
+    }
+
+    h1 {
+        margin: 15px 0 5px;
+    }
+
+    #score {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+
+    #game {
+        position: relative;
+        width: 95%;
+        max-width: 500px;
+        height: 600px;
+        margin: auto;
+        background: #222;
+        border: 3px solid white;
+        overflow: hidden;
+    }
+
+    #player {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 70px;
+        background: #00ff66;
+        border-radius: 50%;
+        box-shadow: 0 0 20px #00ff66;
+    }
+
+    .enemy {
+        position: absolute;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: red;
+    }
+
+    #startBtn {
+        margin: 15px;
+        padding: 12px 25px;
+        font-size: 18px;
+        border: none;
+        border-radius: 10px;
+        background: #00ccff;
+        color: white;
+    }
+
+    #message {
+        font-size: 20px;
+        margin: 10px;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>🎨 Color Protection</h1>
+<div id="score">Score: 0</div>
+
+<div id="game">
+    <div id="player"></div>
+</div>
+
+<button id="startBtn">START GAME</button>
+
+<div id="message">🔵 নীল বল এড়িয়ে চলো!</div>
+
+<script>
+const game = document.getElementById("game");
+const player = document.getElementById("player");
+const scoreText = document.getElementById("score");
+const startBtn = document.getElementById("startBtn");
+const message = document.getElementById("message");
+
+let score = 0;
+let playing = false;
+let playerX = 50;
+let enemies = [];
+let gameLoop;
+let enemyTimer;
+
+function movePlayer(x) {
+    playerX = Math.max(8, Math.min(92, x));
+    player.style.left = playerX + "%";
+}
+
+game.addEventListener("touchmove", function(e) {
+    if (!playing) return;
+
+    const touch = e.touches[0];
+    const rect = game.getBoundingClientRect();
+
+    let x = ((touch.clientX - rect.left) / rect.width) * 100;
+    movePlayer(x);
+});
+
+game.addEventListener("mousemove", function(e) {
+    if (!playing) return;
+
+    const rect = game.getBoundingClientRect();
+
+    let x = ((e.clientX - rect.left) / rect.width) * 100;
+    movePlayer(x);
+});
+
+function createEnemy() {
+    if (!playing) return;
+
+    const enemy = document.createElement("div");
+    enemy.className = "enemy";
+
+    enemy.style.left = Math.random() * 90 + "%";
+    enemy.style.top = "-50px";
+
+    game.appendChild(enemy);
+    enemies.push(enemy);
+}
+
+function startGame() {
+    score = 0;
+    scoreText.textContent = "Score: 0";
+    message.textContent = "🔵 নীল বল এড়িয়ে চলো!";
+
+    enemies.forEach(e => e.remove());
+    enemies = [];
+
+    playing = true;
+    startBtn.textContent = "RESTART";
+
+    clearInterval(enemyTimer);
+    clearInterval(gameLoop);
+
+    enemyTimer = setInterval(createEnemy, 700);
+
+    gameLoop = setInterval(() => {
+
+        enemies.forEach((enemy, index) => {
+
+            let top = parseFloat(enemy.style.top);
+            top += 5;
+            enemy.style.top = top + "px";
+
+            if (top > game.clientHeight) {
+                enemy.remove();
+                enemies.splice(index, 1);
+
+                score++;
+                scoreText.textContent = "Score: " + score;
+            }
+
+            const p = player.getBoundingClientRect();
+            const e = enemy.getBoundingClientRect();
+
+            if (
+                p.left < e.right &&
+                p.right > e.left &&
+                p.top < e.bottom &&
+                p.bottom > e.top
+            ) {
+                gameOver();
+            }
+        });
+
+    }, 30);
+}
+
+function gameOver() {
+    playing = false;
+
+    clearInterval(enemyTimer);
+    clearInterval(gameLoop);
+
+    message.textContent = "💥 GAME OVER! Score: " + score;
+    startBtn.textContent = "PLAY AGAIN";
+}
+
+startBtn.addEventListener("click", startGame);
+</script>
+
+</body>
+</html>
