@@ -2,273 +2,219 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>Color Game Demo</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VIP Color Demo</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
+  background:#070707;
+  color:#fff;
   font-family:Arial,sans-serif;
-  background:#07133b;
-  color:white;
 }
 
 .app{
-  width:100%;
   max-width:480px;
-  margin:auto;
   min-height:100vh;
-  background:linear-gradient(#0759b8,#07163d);
-  padding-bottom:25px;
+  margin:auto;
+  background:linear-gradient(180deg,#111,#050505);
+  padding-bottom:30px;
 }
 
-/* HEADER */
 .header{
-  height:65px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 18px;
-  background:#064a9d;
+  padding:20px;
+  text-align:center;
+  background:linear-gradient(135deg,#1b1b1b,#000);
+  border-bottom:1px solid #b98b2e;
+}
+
+.crown{
+  font-size:34px;
 }
 
 .logo{
-  font-size:28px;
+  font-size:25px;
   font-weight:bold;
-  font-style:italic;
+  color:#ffd65a;
+  letter-spacing:2px;
 }
 
-.logo span{
-  color:#22d7ff;
-}
-
-.icons{
-  font-size:23px;
-}
-
-/* BALANCE DEMO */
-.balance{
-  margin:12px;
-  padding:18px;
-  border-radius:18px;
-  background:linear-gradient(135deg,#1688e8,#0752b5);
-  text-align:center;
-}
-
-.balance small{
-  opacity:.8;
-}
-
-.balance h2{
-  margin:6px;
-}
-
-.demo-badge{
+.vip{
   display:inline-block;
-  background:#ffb300;
-  color:#111;
-  padding:4px 10px;
+  margin-top:7px;
+  padding:5px 14px;
   border-radius:20px;
+  background:#b8860b;
+  color:#fff;
   font-size:12px;
   font-weight:bold;
 }
 
-/* GAME TABS */
-.tabs{
-  display:flex;
-  justify-content:space-around;
-  margin:12px;
-}
-
-.tab{
-  width:23%;
-  padding:14px 4px;
-  border-radius:12px;
-  text-align:center;
-  background:#123d81;
-  font-size:13px;
-}
-
-.tab.active{
-  background:#087be5;
-}
-
-/* TIMER */
-.game-card{
-  margin:12px;
-  padding:16px;
+.card{
+  margin:14px;
+  padding:18px;
   border-radius:18px;
-  background:#0d2d68;
+  background:#151515;
+  border:1px solid #6d5220;
+  box-shadow:0 4px 20px #000;
 }
 
-.topline{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.title{
+  color:#ffd65a;
+  font-size:18px;
+  font-weight:bold;
 }
 
 .timer{
-  font-size:38px;
+  text-align:center;
+  font-size:52px;
   font-weight:bold;
-  color:#25dfff;
+  color:#ffd65a;
+  margin:8px;
 }
 
 .period{
-  margin-top:8px;
-  background:#092353;
-  padding:12px;
+  padding:13px;
+  background:#090909;
   border-radius:10px;
   text-align:center;
-  font-size:17px;
   word-break:break-all;
+  color:#ddd;
 }
 
-/* COLORS */
 .colors{
   display:flex;
   gap:8px;
   margin-top:15px;
 }
 
-.color{
+.colors div{
   flex:1;
-  padding:15px 5px;
+  padding:14px 4px;
   border-radius:10px;
   text-align:center;
   font-weight:bold;
 }
 
-.green{
-  background:#13bd63;
-}
+.green{background:#079447}
+.red{background:#c92736}
+.violet{background:#7736a8}
 
-.violet{
-  background:#a044df;
-}
-
-.red{
-  background:#f03346;
-}
-
-/* NUMBERS */
 .numbers{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  gap:10px;
+  gap:9px;
   margin-top:15px;
 }
 
 .num{
-  height:58px;
+  height:55px;
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:24px;
+  font-size:23px;
   font-weight:bold;
-  background:#18a76a;
-  box-shadow:inset 0 0 12px #ffffff55;
+  background:#168d59;
 }
 
-.num.rednum{
-  background:#ef4050;
+.num:nth-child(even){
+  background:#c92e3c;
 }
 
-.num.violetnum{
-  background:linear-gradient(135deg,#ef4050,#8d42df);
+.num:nth-child(5),
+.num:nth-child(6){
+  background:#7a3ca9;
 }
 
-/* BIG SMALL */
 .bigsmall{
   display:flex;
-  margin-top:16px;
+  margin-top:15px;
   overflow:hidden;
-  border-radius:20px;
+  border-radius:18px;
+}
+
+.bigsmall div{
+  width:50%;
+  padding:14px;
+  text-align:center;
+  font-weight:bold;
 }
 
 .big{
-  width:50%;
-  padding:15px;
-  text-align:center;
-  background:#f49b19;
-  font-weight:bold;
+  background:#b87513;
 }
 
 .small{
-  width:50%;
-  padding:15px;
-  text-align:center;
-  background:#159bd7;
-  font-weight:bold;
+  background:#126f9e;
 }
 
-/* PREDICTION */
-.prediction{
-  margin-top:18px;
-  padding:18px;
+.next{
+  text-align:center;
+  padding:20px;
   border-radius:15px;
-  background:#071e50;
-  text-align:center;
+  background:#0b0b0b;
+  border:1px solid #8a6827;
+  margin-top:15px;
 }
 
-.pred-title{
-  color:#ffd54f;
-  font-size:14px;
+.next small{
+  color:#aaa;
 }
 
-.pred-number{
-  font-size:48px;
+.next-number{
+  font-size:55px;
   font-weight:bold;
-  margin:8px;
+  color:#ffd65a;
+  margin:5px;
 }
 
-.pred-color{
+.next-color{
   font-size:24px;
   font-weight:bold;
 }
 
-/* HISTORY */
-.history{
-  margin-top:18px;
+.next-size{
+  margin-top:5px;
+  color:#ccc;
 }
 
 .history-title{
-  font-size:20px;
-  margin-bottom:10px;
+  color:#ffd65a;
+  font-size:19px;
+  font-weight:bold;
+  margin-top:20px;
 }
 
 .history-head,
 .history-row{
   display:grid;
-  grid-template-columns:1.6fr .5fr .8fr .8fr;
-  gap:4px;
-  padding:11px 5px;
-  font-size:12px;
+  grid-template-columns:1.7fr .5fr .8fr .8fr;
+  gap:3px;
+  padding:10px 3px;
   text-align:center;
+  font-size:11px;
 }
 
 .history-head{
-  background:#087be5;
-  border-radius:8px;
+  background:#76591e;
+  margin-top:9px;
+  border-radius:7px;
 }
 
 .history-row{
-  border-bottom:1px solid #ffffff18;
+  border-bottom:1px solid #ffffff15;
 }
 
-/* NOTICE */
 .notice{
-  margin:15px 12px;
-  padding:12px;
-  border-radius:10px;
-  background:#3a2b09;
-  color:#ffd76a;
-  font-size:12px;
+  margin:14px;
+  padding:11px;
+  border-radius:9px;
+  background:#241d0b;
+  color:#d9bd68;
+  font-size:11px;
   text-align:center;
 }
 </style>
@@ -278,202 +224,139 @@ body{
 
 <div class="app">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div>☰</div>
+<div class="header">
+  <div class="crown">👑</div>
+  <div class="logo">COLOR VIP</div>
+  <div class="vip">VIP DEMO</div>
+</div>
 
-    <div class="logo">
-      <span>7</span> COLOR
-    </div>
 
-    <div class="icons">◉ ⚙</div>
+<div class="card">
+
+  <div class="title">🎮 1 MINUTE LIVE DEMO</div>
+
+  <div class="timer" id="timer">
+    00:00
+  </div>
+
+  <div class="period" id="period">
+    Period: ---
   </div>
 
 
-  <!-- DEMO BALANCE -->
-  <div class="balance">
-
-    <span class="demo-badge">DEMO MODE</span>
-
-    <small>Demo Balance</small>
-
-    <h2>₹0.00</h2>
-
+  <div class="colors">
+    <div class="green">GREEN</div>
+    <div class="violet">VIOLET</div>
+    <div class="red">RED</div>
   </div>
 
 
-  <!-- GAME TABS -->
-  <div class="tabs">
-
-    <div class="tab">30 Sec</div>
-
-    <div class="tab active">
-      WinGo<br>1 Min
-    </div>
-
-    <div class="tab">
-      WinGo<br>3 Min
-    </div>
-
-    <div class="tab">
-      WinGo<br>5 Min
-    </div>
-
+  <div class="numbers">
+    <div class="num">0</div>
+    <div class="num">1</div>
+    <div class="num">2</div>
+    <div class="num">3</div>
+    <div class="num">4</div>
+    <div class="num">5</div>
+    <div class="num">6</div>
+    <div class="num">7</div>
+    <div class="num">8</div>
+    <div class="num">9</div>
   </div>
 
 
-  <!-- MAIN GAME -->
-  <div class="game-card">
+  <div class="bigsmall">
+    <div class="big">BIG</div>
+    <div class="small">SMALL</div>
+  </div>
 
-    <div class="topline">
 
-      <div>
-        🎮 WinGo 1 Min
-      </div>
+  <div class="next">
 
-      <div>
-        Time remaining
-      </div>
+    <small>🔮 NEXT DEMO RESULT</small>
 
+    <div class="next-number" id="number">
+      -
     </div>
 
-
-    <div class="timer" id="timer">
-      00:23
+    <div class="next-color" id="color">
+      ---
     </div>
 
-
-    <div class="period" id="period">
-      Period: 20260818100011189
-    </div>
-
-
-    <!-- COLORS -->
-    <div class="colors">
-
-      <div class="color green">
-        Green
-      </div>
-
-      <div class="color violet">
-        Violet
-      </div>
-
-      <div class="color red">
-        Red
-      </div>
-
-    </div>
-
-
-    <!-- NUMBERS -->
-    <div class="numbers">
-
-      <div class="num violetnum">0</div>
-      <div class="num">1</div>
-      <div class="num rednum">2</div>
-      <div class="num">3</div>
-      <div class="num rednum">4</div>
-
-      <div class="num violetnum">5</div>
-      <div class="num rednum">6</div>
-      <div class="num">7</div>
-      <div class="num rednum">8</div>
-      <div class="num">9</div>
-
-    </div>
-
-
-    <!-- BIG SMALL -->
-    <div class="bigsmall">
-
-      <div class="big">
-        Big
-      </div>
-
-      <div class="small">
-        Small
-      </div>
-
-    </div>
-
-
-    <!-- DEMO PREDICTION -->
-    <div class="prediction">
-
-      <div class="pred-title">
-        🔮 NEXT DEMO PREDICTION
-      </div>
-
-      <div class="pred-number" id="predNumber">
-        7
-      </div>
-
-      <div class="pred-color" id="predColor">
-        GREEN
-      </div>
-
-      <div id="predSize">
-        BIG
-      </div>
-
-    </div>
-
-
-    <!-- HISTORY -->
-    <div class="history">
-
-      <div class="history-title">
-        📋 Game History
-      </div>
-
-      <div class="history-head">
-        <div>Period</div>
-        <div>No.</div>
-        <div>Big/Small</div>
-        <div>Color</div>
-      </div>
-
-      <div id="history"></div>
-
+    <div class="next-size" id="size">
+      ---
     </div>
 
   </div>
 
 
-  <div class="notice">
-    ⚠️ DEMO ONLY — Prediction is randomly generated.
-    এটি কোনো আসল গেমের ফলাফল বা জেতার নিশ্চয়তা নয়।
+  <div class="history-title">
+    📊 DEMO HISTORY
   </div>
+
+  <div class="history-head">
+    <div>PERIOD</div>
+    <div>NO.</div>
+    <div>SIZE</div>
+    <div>COLOR</div>
+  </div>
+
+  <div id="history"></div>
+
+</div>
+
+
+<div class="notice">
+⚠️ VIP DEMO — এটি শুধু Simulation।
+আসল গেমের ফলাফল আগে থেকে জানায় না।
+</div>
 
 </div>
 
 
 <script>
 
-/* ==========================
-   STARTING PERIOD
-========================== */
+/* =========================
+   REAL PHONE CLOCK
+========================= */
 
-let periodNumber = 20260818100011189;
-
-
-/* ==========================
-   TIMER
-   ছবির সময় অনুযায়ী 23 থেকে শুরু
-========================== */
-
-let seconds = 23;
+function pad(n){
+  return String(n).padStart(2,"0");
+}
 
 
-/* ==========================
+/*
+  Demo Period.
+  এটি নিজের Demo-র জন্য।
+*/
+
+function getPeriod(){
+
+  const now = new Date();
+
+  const date =
+    now.getFullYear().toString() +
+    pad(now.getMonth()+1) +
+    pad(now.getDate());
+
+  const minute =
+    now.getHours()*60 +
+    now.getMinutes();
+
+  return date +
+         "1000" +
+         String(minute).padStart(4,"0");
+}
+
+
+/* =========================
    RANDOM DEMO RESULT
-========================== */
+========================= */
 
-function makePrediction(){
+function createResult(){
 
-  let number =
-    Math.floor(Math.random() * 10);
+  const number =
+    Math.floor(Math.random()*10);
 
   let color;
 
@@ -481,151 +364,155 @@ function makePrediction(){
 
     color = "VIOLET";
 
-  }
-  else if(
-    number === 1 ||
-    number === 3 ||
-    number === 7 ||
-    number === 9
-  ){
+  }else if(number % 2 === 1){
 
     color = "GREEN";
 
-  }
-  else{
+  }else{
 
     color = "RED";
 
   }
 
-  let size =
+  const size =
     number >= 5 ? "BIG" : "SMALL";
 
-
-  document.getElementById("predNumber")
-    .innerText = number;
-
-  document.getElementById("predColor")
-    .innerText = color;
-
-  document.getElementById("predSize")
-    .innerText = size;
-
+  return {
+    number,
+    color,
+    size
+  };
 }
 
 
-/* ==========================
+/* =========================
+   NEXT RESULT
+========================= */
+
+let nextResult =
+  createResult();
+
+
+function showNext(){
+
+  document.getElementById("number")
+    .textContent =
+    nextResult.number;
+
+  document.getElementById("color")
+    .textContent =
+    nextResult.color;
+
+  document.getElementById("size")
+    .textContent =
+    nextResult.size;
+}
+
+
+/* =========================
    HISTORY
-========================== */
+========================= */
 
-function addHistory(){
+function addHistory(period,result){
 
-  let number =
-    Math.floor(Math.random() * 10);
-
-  let color;
-
-  if(number === 0 || number === 5)
-    color = "Violet";
-  else if(number % 2 === 1)
-    color = "Green";
-  else
-    color = "Red";
-
-  let size =
-    number >= 5 ? "Big" : "Small";
-
-
-  let row =
+  const row =
     document.createElement("div");
 
-  row.className = "history-row";
+  row.className =
+    "history-row";
 
-  row.innerHTML = `
-    <div>${periodNumber}</div>
-    <div>${number}</div>
-    <div>${size}</div>
-    <div>${color}</div>
-  `;
+  row.innerHTML =
+    "<div>"+period+"</div>"+
+    "<div>"+result.number+"</div>"+
+    "<div>"+result.size+"</div>"+
+    "<div>"+result.color+"</div>";
 
   document
     .getElementById("history")
     .prepend(row);
 
-
-  /* সর্বোচ্চ 10টি history */
-
-  let rows =
+  const rows =
     document.querySelectorAll(".history-row");
 
-  if(rows.length > 10){
+  if(rows.length > 15){
 
-    rows[rows.length - 1].remove();
+    rows[rows.length-1].remove();
 
   }
-
 }
 
 
-/* ==========================
-   TIMER
-========================== */
+/* =========================
+   LIVE TIMER
+========================= */
 
-function updateTimer(){
+let previousMinute = "";
+
+
+function update(){
+
+  const now = new Date();
+
+  const seconds =
+    now.getSeconds();
+
+  const remaining =
+    60 - seconds;
+
 
   document.getElementById("timer")
-    .innerText =
-    "00:" +
-    String(seconds).padStart(2,"0");
+    .textContent =
+    "00:" + pad(remaining);
 
 
-  if(seconds === 0){
-
-    /* নতুন Period */
-
-    periodNumber++;
+  const period =
+    getPeriod();
 
 
-    document.getElementById("period")
-      .innerText =
-      "Period: " + periodNumber;
+  document.getElementById("period")
+    .textContent =
+    "Period: " + period;
 
 
-    /* আগের ফল history-তে */
-
-    addHistory();
-
-
-    /* নতুন Demo prediction */
-
-    makePrediction();
+  const minuteKey =
+    now.getFullYear()+"-"+
+    now.getMonth()+"-"+
+    now.getDate()+"-"+
+    now.getHours()+"-"+
+    now.getMinutes();
 
 
-    /* নতুন 1 মিনিট */
+  if(
+    previousMinute !== "" &&
+    previousMinute !== minuteKey
+  ){
 
-    seconds = 59;
+    addHistory(
+      period,
+      nextResult
+    );
 
+    nextResult =
+      createResult();
+
+    showNext();
   }
-  else{
 
-    seconds--;
 
-  }
-
+  previousMinute =
+    minuteKey;
 }
 
 
-/* ==========================
-   START
-========================== */
+/* START */
 
-makePrediction();
+showNext();
 
-updateTimer();
+update();
 
 setInterval(
-  updateTimer,
-  1000
+  update,
+  250
 );
 
 </script>
