@@ -1,378 +1,191 @@
-ধ্য<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Color Protection Live Demo</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WinGo 1 Min Demo</title>
 
 <style>
 *{box-sizing:border-box}
 
 body{
   margin:0;
-  background:#111;
+  background:#111b45;
   color:white;
   font-family:Arial,sans-serif;
   text-align:center;
 }
 
+.app{
+  max-width:500px;
+  margin:auto;
+  padding:15px;
+}
+
 h1{
-  margin:18px 0 8px;
-  font-size:30px;
+  margin:8px 0 15px;
+  font-size:28px;
 }
 
-.badge{
-  display:inline-block;
-  background:#222;
-  padding:8px 15px;
-  border-radius:20px;
-  color:#00eaff;
-}
-
-#game{
-  width:92%;
-  max-width:520px;
-  height:520px;
-  margin:18px auto;
-  border:4px solid white;
-  position:relative;
-  overflow:hidden;
-  background:#191919;
-}
-
-.ball{
-  width:65px;
-  height:65px;
-  border-radius:50%;
-  position:absolute;
-  box-shadow:0 0 25px currentColor;
-}
-
-#timer{
-  font-size:38px;
-  font-weight:bold;
-  margin:10px;
-  color:#00eaff;
-}
-
-#period{
-  font-size:18px;
-  margin:8px;
-}
-
-#prediction{
-  margin:15px auto;
-  width:90%;
-  max-width:400px;
-  background:#222;
+.timer-box{
+  background:#1687d9;
   border-radius:15px;
-  padding:18px;
-  font-size:23px;
+  padding:15px;
 }
+
+.timer{
+  font-size:50px;
+  font-weight:bold;
+  letter-spacing:5px;
+}
+
+.period{
+  font-size:17px;
+  margin-top:8px;
+}
+
+.buttons{
+  display:flex;
+  gap:8px;
+  margin-top:15px;
+}
+
+.buttons div{
+  flex:1;
+  padding:15px 5px;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.green{background:#16a34a}
+.violet{background:#8b42d6}
+.red{background:#ef3340}
+
+.numbers{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-top:18px;
+}
+
+.num{
+  padding:18px 5px;
+  border-radius:50%;
+  font-size:25px;
+  font-weight:bold;
+}
+
+.n0,.n2,.n4,.n6,.n8{background:#e83b4b}
+.n1,.n3,.n5,.n7,.n9{background:#18a878}
 
 .result{
-  font-size:30px;
+  margin-top:20px;
+  background:#222;
+  border-radius:15px;
+  padding:20px;
+}
+
+.result-title{
+  color:#aaa;
+}
+
+.result-value{
+  font-size:32px;
   font-weight:bold;
   margin-top:10px;
 }
 
-button{
-  border:0;
-  border-radius:12px;
-  padding:15px 30px;
-  font-size:20px;
-  background:#00bfff;
-  color:white;
-}
-
-.green{color:#00ff66}
-.red{color:#ff3030}
-.violet{color:#c060ff}
-</style>
-</head>
-
-<body>
-
-<h1>🎨 Color Protection</h1>
-<div class="badge">LIVE DEMO</div>
-
-<div id="timer">60</div>
-<div id="period">Period: --</div>
-
-<div id="game"></div>
-
-<div id="prediction">
-  পরবর্তী ডেমো ফল
-  <div id="predictionText" class="result">
-    অপেক্ষা করুন...
-  </div>
-</div>
-
-<button onclick="startGame()">START GAME</button>
-
-<script>
-
-let running=false;
-let seconds=60;
-let period=1;
-let timer=null;
-
-const colors=[
-  {name:"GREEN", class:"green"},
-  {name:"RED", class:"red"},
-  {name:"VIOLET", class:"violet"}
-];
-
-function makeResult(){
-
-  const color =
-    colors[Math.floor(Math.random()*colors.length)];
-
-  const number =
-    Math.floor(Math.random()*10);
-
-  let size = number <= 4 ? "SMALL" : "BIG";
-
-  return {
-    color:color,
-    number:number,
-    size:size
-  };
-}
-
-function showResult(){
-
-  const r=makeResult();
-
-  document.getElementById("predictionText").innerHTML =
-    `<span class="${r.color.class}">
-      ${r.color.name} • ${r.number} • ${r.size}
-    </span>`;
-
-  createBalls();
-}
-
-function createBalls(){
-
-  const game=document.getElementById("game");
-  game.innerHTML="";
-
-  for(let i=0;i<5;i++){
-
-    const r=makeResult();
-
-    const ball=document.createElement("div");
-
-    ball.className="ball";
-
-    ball.style.background =
-      r.color.name.toLowerCase();
-
-    ball.style.color =
-      r.color.name.toLowerCase();
-
-    ball.style.left =
-      Math.random()*80 + "%";
-
-    ball.style.top =
-      Math.random()*85 + "%";
-
-    game.appendChild(ball);
-  }
-}
-
-function startGame(){
-
-  if(running)return;
-
-  running=true;
-  seconds=60;
-
-  showResult();
-
-  timer=setInterval(()=>{
-
-    seconds--;
-
-    document.getElementById("timer").textContent =
-      seconds;
-
-    document.getElementById("period").textContent =
-      "Period: " + period;
-
-    if(seconds<=0){
-
-      seconds=60;
-      period++;
-
-      showResult();
-    }
-
-  },1000);
-}
-
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="bn">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Color Protection Live Demo</title>
-
-<style>
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  background:#111;
-  color:white;
-  font-family:Arial,sans-serif;
-  text-align:center;
-}
-
-.container{
-  max-width:520px;
-  margin:auto;
-  padding:18px;
-}
-
-h1{
-  font-size:28px;
-  margin:10px 0;
-}
-
-.note{
+.warning{
   color:#aaa;
-  font-size:13px;
-  margin-bottom:15px;
-}
-
-.card{
-  background:#202020;
-  border:1px solid #555;
-  border-radius:16px;
-  padding:18px;
-  margin:14px 0;
-}
-
-.label{
-  color:#aaa;
-  font-size:15px;
-}
-
-#period{
-  font-size:18px;
-  margin-top:6px;
-}
-
-#timer{
-  font-size:58px;
-  font-weight:bold;
-  margin:8px 0;
-}
-
-#status{
-  color:#ccc;
-}
-
-#result{
-  font-size:30px;
-  font-weight:bold;
-  padding:18px;
-  border-radius:12px;
-  background:#333;
-}
-
-.green{
-  background:#087f3e !important;
-}
-
-.red{
-  background:#a51f2b !important;
-}
-
-.violet{
-  background:#7138a8 !important;
-}
-
-.small{
-  color:#aaa;
-  font-size:13px;
-  margin-top:10px;
-}
-
-button{
-  border:0;
-  border-radius:10px;
-  padding:13px 22px;
-  font-size:16px;
-  font-weight:bold;
-  background:#159447;
-  color:white;
+  font-size:12px;
+  margin-top:15px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="app">
 
-<h1>🎨 Color Protection Live Demo</h1>
+<h1>🎨 WinGo 1 Min — Demo</h1>
 
-<div class="note">
-এটি শুধুমাত্র ডেমো/সিমুলেশন।
-</div>
+<div class="timer-box">
 
-<div class="card">
+<div id="timer" class="timer">00:60</div>
 
-<div class="label">Demo Period</div>
-
-<div id="period">---</div>
-
-<div id="timer">00:60</div>
-
-<div id="status">
-পরের ডেমো রাউন্ডের অপেক্ষায়...
+<div class="period">
+Period: <span id="period">---</span>
 </div>
 
 </div>
 
-<div class="card">
-
-<div class="label">
-সিমুলেটেড ফলাফল
+<div class="buttons">
+<div class="green">Green</div>
+<div class="violet">Violet</div>
+<div class="red">Red</div>
 </div>
 
-<br>
+<div class="numbers">
 
-<div id="result">
----
+<div class="num n0">0</div>
+<div class="num n1">1</div>
+<div class="num n2">2</div>
+<div class="num n3">3</div>
+<div class="num n4">4</div>
+
+<div class="num n5">5</div>
+<div class="num n6">6</div>
+<div class="num n7">7</div>
+<div class="num n8">8</div>
+<div class="num n9">9</div>
+
 </div>
 
-<div id="details" class="small">
-নতুন রাউন্ড শুরু হলে ফলাফল তৈরি হবে।
+<div class="result">
+
+<div class="result-title">
+ডেমো রেজাল্ট
+</div>
+
+<div id="result" class="result-value">
+অপেক্ষা করুন...
 </div>
 
 </div>
 
-<button onclick="newDemo()">
-নতুন ডেমো রাউন্ড
-</button>
+<div class="warning">
+এটি শুধুমাত্র সিমুলেশন। কোনো আসল Tiranga ফলাফল আগে থেকে জানায় না।
+</div>
 
 </div>
 
 <script>
 
-function pad(number){
-  return String(number).padStart(2,"0");
+function pad(n){
+  return String(n).padStart(2,"0");
 }
 
 
-function makeResult(){
+/* Period তৈরি */
+function getPeriod(){
+
+  const now = new Date();
+
+  const date =
+    now.getFullYear().toString() +
+    pad(now.getMonth()+1) +
+    pad(now.getDate());
+
+  const minutes =
+    now.getHours()*60 +
+    now.getMinutes();
+
+  return date + "1000" + String(minutes).padStart(4,"0");
+}
+
+
+/* ডেমো ফলাফল */
+function makeDemoResult(){
 
   const number =
     Math.floor(Math.random()*10);
@@ -382,116 +195,55 @@ function makeResult(){
   if(number === 0 || number === 5){
     color = "Violet";
   }
-  else if(number % 2 === 1){
-    color = "Green";
+  else if(number % 2 === 0){
+    color = "Red";
   }
   else{
-    color = "Red";
+    color = "Green";
   }
 
   const size =
     number >= 5 ? "Big" : "Small";
 
-  return {
-    number:number,
-    color:color,
-    size:size
-  };
-
+  return color + " • " + number + " • " + size;
 }
 
 
-function showResult(result){
-
-  const box =
-    document.getElementById("result");
-
-  box.className =
-    "result " +
-    result.color.toLowerCase();
-
-  box.textContent =
-    result.color +
-    " • " +
-    result.number +
-    " • " +
-    result.size;
-
-  document.getElementById("details")
-    .textContent =
-    "এটি কম্পিউটার-জেনারেটেড ডেমো ফলাফল।";
-
-}
-
-
-let previousSecond = -1;
-
-
-function updateClock(){
+/* প্রতি সেকেন্ডে ঘড়ি আপডেট */
+function update(){
 
   const now = new Date();
 
-  const second =
+  const seconds =
     now.getSeconds();
 
   const remaining =
-    60 - second;
+    60 - seconds;
 
   document.getElementById("timer")
     .textContent =
     "00:" + pad(remaining);
 
-
-  const period =
-    now.getFullYear().toString() +
-    pad(now.getMonth()+1) +
-    pad(now.getDate()) +
-    pad(now.getHours()) +
-    pad(now.getMinutes());
-
   document.getElementById("period")
-    .textContent = period;
-
-
-  if(
-    second === 0 &&
-    previousSecond !== 0
-  ){
-
-    showResult(makeResult());
-
-    document.getElementById("status")
-      .textContent =
-      "নতুন ডেমো রাউন্ড শুরু হয়েছে";
-
-  }
-  else if(second !== 0){
-
-    document.getElementById("status")
-      .textContent =
-      "রাউন্ড চলছে...";
-
-  }
-
-  previousSecond = second;
-
-}
-
-
-function newDemo(){
-
-  showResult(makeResult());
-
-  document.getElementById("status")
     .textContent =
-    "নতুন ডেমো ফলাফল তৈরি হয়েছে";
+    getPeriod();
+
+
+  /* নতুন মিনিট শুরু */
+  if(seconds === 0){
+
+    document.getElementById("result")
+      .textContent =
+      makeDemoResult();
+
+  }
 
 }
 
 
-updateClock();
+update();
 
-setInterval(updateClock,250);
+setInterval(update,1000);
 
 </script>
 
