@@ -1,290 +1,30 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Live Color Demo</title>
-
-<style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:#07132e;
-  color:white;
-  font-family:Arial,sans-serif;
-  text-align:center
-}
-.box{
-  max-width:430px;
-  margin:auto;
-  padding:18px
-}
-h1{font-size:28px}
-.card{
-  background:#102653;
-  border-radius:18px;
-  padding:20px;
-  margin:15px 0;
-  box-shadow:0 5px 20px #0006
-}
-.timer{
-  font-size:42px;
-  font-weight:bold;
-  color:#00e5ff
-}
-.period{
-  font-size:18px;
-  margin-top:10px;
-  word-break:break-all
-}
-.prediction{
-  font-size:30px;
-  font-weight:bold;
-  margin:15px
-}
-.number{
-  font-size:55px;
-  font-weight:bold
-}
-.green{color:#20e878}
-.red{color:#ff4757}
-.violet{color:#d56cff}
-button{
-  width:100%;
-  padding:15px;
-  border:0;
-  border-radius:12px;
-  background:#00bcd4;
-  color:white;
-  font-size:18px;
-  font-weight:bold
-}
-.history{
-  text-align:left;
-  max-height:300px;
-  overflow:auto
-}
-.row{
-  display:flex;
-  justify-content:space-between;
-  padding:10px;
-  border-bottom:1px solid #ffffff22
-}
-.note{
-  color:#ffd166;
-  font-size:13px;
-  margin-top:15px
-}
-</style>
-</head>
-
-<body>
-
-<div class="box">
-
-<h1>🎨 Color Protection</h1>
-
-<div class="card">
-  <div>Time Remaining</div>
-  <div class="timer" id="timer">00:60</div>
-  <div class="period" id="period">Period: --</div>
-</div>
-
-<div class="card">
-  <div>🔮 NEXT DEMO PREDICTION</div>
-
-  <div class="prediction" id="color">---</div>
-
-  <div class="number" id="number">?</div>
-
-  <div id="size">---</div>
-</div>
-
-<button onclick="newPrediction()">NEW DEMO PREDICTION</button>
-
-<div class="card">
-  <h2>📋 Demo History</h2>
-  <div class="history" id="history"></div>
-</div>
-
-<div class="note">
-⚠️ এটি শুধুমাত্র Demo/Random simulation।
-আসল কোনো গেমের ফলাফল বা জেতার নিশ্চয়তা দেয় না।
-</div>
-
-</div>
-
 <script>
+let currentPeriod = 20260818100011189;
 
-/* =========================
-   SETTINGS
-========================= */
+// ছবিতে যখন 23 সেকেন্ড বাকি ছিল
+let seconds = 23;
 
-// এখানে তোমার গেমের বর্তমান Period-এর শেষ নম্বর বসাও
-let basePeriod = 11179;
-
-// প্রতি রাউন্ড 60 সেকেন্ড
-let seconds = 60;
-
-// Demo history
-let history = [];
-
-
-/* =========================
-   RANDOM DEMO RESULT
-========================= */
-
-function generatePrediction(){
-
-  let number = Math.floor(Math.random()*10);
-
-  let color;
-
-  // Demo color rules
-  if(number === 0){
-    color = "Violet";
-  }
-  else if(number === 5){
-    color = "Violet";
-  }
-  else if(number % 2 === 0){
-    color = "Red";
-  }
-  else{
-    color = "Green";
-  }
-
-  let size = number >= 5 ? "BIG" : "SMALL";
-
-  return {
-    number:number,
-    color:color,
-    size:size
-  };
+function showPeriod() {
+    document.getElementById("period").innerText =
+        "Period: " + currentPeriod;
 }
 
+function updateTimer() {
 
-/* =========================
-   SHOW PREDICTION
-========================= */
+    document.getElementById("timer").innerText =
+        "00:" + String(seconds).padStart(2, "0");
 
-function showPrediction(){
-
-  let result = generatePrediction();
-
-  let nextPeriod = basePeriod + 1;
-
-  document.getElementById("period").innerText =
-    "Period: 20260818" + nextPeriod;
-
-  document.getElementById("number").innerText =
-    result.number;
-
-  document.getElementById("color").innerText =
-    result.color;
-
-  document.getElementById("size").innerText =
-    result.size;
-
-  let colorBox = document.getElementById("color");
-
-  colorBox.className = "prediction";
-
-  if(result.color === "Green")
-    colorBox.classList.add("green");
-
-  if(result.color === "Red")
-    colorBox.classList.add("red");
-
-  if(result.color === "Violet")
-    colorBox.classList.add("violet");
-
-  basePeriod++;
-
-  addHistory(nextPeriod,result);
+    if (seconds === 0) {
+        currentPeriod++;
+        seconds = 59;
+        showPeriod();
+    } else {
+        seconds--;
+    }
 }
 
+showPeriod();
+updateTimer();
 
-/* =========================
-   NEW PREDICTION BUTTON
-========================= */
-
-function newPrediction(){
-  showPrediction();
-}
-
-
-/* =========================
-   HISTORY
-========================= */
-
-function addHistory(period,result){
-
-  history.unshift({
-    period:period,
-    number:result.number,
-    color:result.color,
-    size:result.size
-  });
-
-  if(history.length > 20)
-    history.pop();
-
-  renderHistory();
-}
-
-
-function renderHistory(){
-
-  let html="";
-
-  history.forEach(function(x){
-
-    html += `
-      <div class="row">
-        <span>${x.period}</span>
-        <span>${x.number}</span>
-        <span>${x.color}</span>
-        <span>${x.size}</span>
-      </div>
-    `;
-
-  });
-
-  document.getElementById("history").innerHTML = html;
-}
-
-
-/* =========================
-   60 SECOND LIVE CLOCK
-========================= */
-
-function updateTimer(){
-
-  document.getElementById("timer").innerText =
-    "00:" + String(seconds).padStart(2,"0");
-
-  seconds--;
-
-  if(seconds < 0){
-
-    seconds = 60;
-
-    // নতুন Demo round
-    showPrediction();
-  }
-}
-
-
-/* =========================
-   START
-========================= */
-
-showPrediction();
-
-setInterval(updateTimer,1000);
-
+setInterval(updateTimer, 1000);
 </script>
-
-</body>
-</html>
